@@ -13,11 +13,10 @@
             --text-main: #0f172a;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --border-hover: #cbd5e1;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
             margin: 0;
@@ -35,7 +34,7 @@
             background: var(--card-bg);
             padding: 40px;
             border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
 
         header {
@@ -70,7 +69,6 @@
             color: var(--text-muted);
         }
 
-        /* Стильная зона Drag and Drop */
         .dropzone {
             border: 2px dashed var(--border);
             padding: 32px 20px;
@@ -78,8 +76,8 @@
             text-align: center;
             background: #fafafa;
             cursor: pointer;
-            transition: all 0.2s ease;
             position: relative;
+            transition: all 0.2s;
         }
 
         .dropzone:hover, .dropzone.dragover {
@@ -110,10 +108,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 15px;
-            color: var(--text-main);
-            background-color: #fff;
             box-sizing: border-box;
-            transition: border-color 0.2s;
         }
 
         input[type="text"]:focus {
@@ -164,7 +159,6 @@
             border-radius: 8px;
             border: 1px solid var(--border);
             cursor: pointer;
-            user-select: none;
         }
 
         .checkbox-card input {
@@ -172,7 +166,6 @@
             height: 16px;
             accent-color: var(--primary);
             margin: 0;
-            cursor: pointer;
         }
 
         .checkbox-card .info {
@@ -183,7 +176,6 @@
         .checkbox-card .title {
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-main);
         }
 
         .checkbox-card .desc {
@@ -226,14 +218,11 @@
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.15s ease;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: background 0.15s;
         }
 
-        .btn:hover {
-            background: var(--primary-hover);
-        }
-
+        .btn:hover { background: var(--primary-hover); }
         .btn:disabled {
             background: #cbd5e1;
             color: #94a3b8;
@@ -310,18 +299,16 @@
     const ctx = canvas.getContext('2d');
     const downloadBtn = document.getElementById('downloadBtn');
     const placeholderText = document.getElementById('placeholderText');
-    
     const opacityVal = document.getElementById('opacityVal');
     const sizeVal = document.getElementById('sizeVal');
 
     let originalImage = null;
 
-    // Подсветка Drag and Drop
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
+    ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, () => dropzone.classList.add('dragover'), false);
     });
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
+    ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, () => dropzone.classList.remove('dragover'), false);
     });
 
     imageLoader.addEventListener('change', handleImage, false);
@@ -343,3 +330,14 @@
         if (!e.target.files || !e.target.files[0]) return;
         
         const file = e.target.files[0];
+        dropzoneText.innerHTML = `Выбран файл: <strong>${file.name}</strong>`;
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            originalImage = new Image();
+            originalImage.onload = function() {
+                placeholderText.style.display = 'none';
+                canvas.style.display = 'block';
+                downloadBtn.disabled = false;
+                updateWatermark();
+            }
