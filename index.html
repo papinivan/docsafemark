@@ -3,107 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocSafeMark</title>
+    <title>DocSafeMark — Защита документов</title>
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+        }
+
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .container {
-            max-width: 650px;
-            width: 100%;
-            background: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .block { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; color: #334155; }
-        input[type="text"], input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .settings { display: flex; gap: 15px; margin-bottom: 10px; }
-        .settings div { flex: 1; }
-        input[type="range"] { width: 100%; }
-        .preview-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 6px;
-            padding: 10px;
-            text-align: center;
-            min-height: 150px;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #f1f5f9;
-            margin: 15px 0;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        canvas { max-width: 100%; max-height: 450px; display: none; border-radius: 4px; }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        /* Стильная зона Drag and Drop */
+        .dropzone {
+            border: 2px dashed var(--border);
+            padding: 32px 20px;
+            border-radius: 12px;
+            text-align: center;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+
+        .dropzone p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .dropzone strong {
+            color: var(--primary);
+        }
+
+        #imageLoader {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--text-main);
+            background-color: #fff;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .sliders {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .sliders { grid-template-columns: 1fr; gap: 16px; }
+        }
+
+        .slider-card {
+            background: #f8fafc;
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 0;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .checkbox-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-card input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-card .info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkbox-card .title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .checkbox-card .desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .preview-box {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #f1f5f9;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin: 32px 0 24px 0;
+        }
+
+        .preview-box p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 500px;
+            display: none;
+        }
+
         .btn {
             display: block;
             width: 100%;
-            background: #2563eb;
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 16px;
             font-size: 16px;
             font-weight: 600;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: background 0.15s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
-        .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 14px; color: #475569; }
-        .checkbox-group input { cursor: pointer; }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="block">
-        <label>1. Выберите фото документа</label>
-        <input type="file" id="imageLoader" accept="image/*">
+    <header>
+        <h1>DocSafeMark</h1>
+        <p class="subtitle">Безопасное нанесение водяных знаков в браузере</p>
+    </header>
+
+    <div class="form-group">
+        <label>1. Исходный файл</label>
+        <div class="dropzone" id="dropzone">
+            <p id="dropzoneText">Перетащите сюда фото или <strong>выберите на компьютере</strong></p>
+            <input type="file" id="imageLoader" accept="image/*">
+        </div>
     </div>
 
-    <div class="block">
-        <label>2. Текст водяного знака</label>
+    <div class="form-group">
+        <label>2. Текст маркировки</label>
         <input type="text" id="textWatermark" value="Для предоставления в банк. Без права кредитования.">
     </div>
 
-    <div class="settings">
-        <div>
-            <label>Прозрачность</label>
+    <div class="form-group sliders">
+        <div class="slider-card">
+            <div class="slider-header">
+                <span>Прозрачность</span>
+                <span id="opacityVal">18%</span>
+            </div>
             <input type="range" id="wmOpacity" min="0.05" max="0.5" step="0.01" value="0.18">
         </div>
-        <div>
-            <label>Размер текста</label>
+        <div class="slider-card">
+            <div class="slider-header">
+                <span>Размер текста</span>
+                <span id="sizeVal">30px</span>
+            </div>
             <input type="range" id="wmSize" min="15" max="70" step="1" value="30">
         </div>
     </div>
 
-    <div class="block">
-        <div class="checkbox-group">
+    <div class="form-group">
+        <label class="checkbox-card" for="aiProtection">
             <input type="checkbox" id="aiProtection" checked>
-            <label for="aiProtection" style="display:inline; font-weight:normal; cursor:pointer;">🛡️ Включить умную ИИ-защиту от стирания (шум и искажения)</label>
-        </div>
+            <div class="info">
+                <span class="title">Защита от ИИ-удаления</span>
+                <span class="desc">Искажения и микрошум против нейросетей-ластиков</span>
+            </div>
+        </label>
     </div>
 
-    <div class="preview-area">
-        <p id="placeholderText" style="color: #64748b;">Результат появится здесь</p>
+    <div class="preview-box">
+        <p id="placeholderText">Загрузите документ для предпросмотра</p>
         <canvas id="imageCanvas"></canvas>
     </div>
 
-    <button class="btn" id="downloadBtn" disabled>Скачать результат</button>
+    <button class="btn" id="downloadBtn" disabled>Скачать защищенный документ</button>
 </div>
 
 <script>
     const imageLoader = document.getElementById('imageLoader');
+    const dropzone = document.getElementById('dropzone');
+    const dropzoneText = document.getElementById('dropzoneText');
     const textWatermark = document.getElementById('textWatermark');
     const wmOpacity = document.getElementById('wmOpacity');
     const wmSize = document.getElementById('wmSize');
@@ -112,135 +310,36 @@
     const ctx = canvas.getContext('2d');
     const downloadBtn = document.getElementById('downloadBtn');
     const placeholderText = document.getElementById('placeholderText');
+    
+    const opacityVal = document.getElementById('opacityVal');
+    const sizeVal = document.getElementById('sizeVal');
 
     let originalImage = null;
 
+    // Подсветка Drag and Drop
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
+    });
+
     imageLoader.addEventListener('change', handleImage, false);
     textWatermark.addEventListener('input', updateWatermark);
-    wmOpacity.addEventListener('input', updateWatermark);
-    wmSize.addEventListener('input', updateWatermark);
+    
+    wmOpacity.addEventListener('input', (e) => {
+        opacityVal.innerText = `${Math.round(e.target.value * 100)}%`;
+        updateWatermark();
+    });
+    
+    wmSize.addEventListener('input', (e) => {
+        sizeVal.innerText = `${e.target.value}px`;
+        updateWatermark();
+    });
+    
     aiProtection.addEventListener('change', updateWatermark);
 
     function handleImage(e) {
         if (!e.target.files || !e.target.files[0]) return;
         
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            originalImage = new Image();
-            originalImage.onload = function() {
-                placeholderText.style.display = 'none';
-                canvas.style.display = 'block';
-                downloadBtn.disabled = false;
-                updateWatermark();
-            }
-            originalImage.src = event.target.result;
-        }
-        reader.readAsDataURL(e.target.files[0]);
-    }
-
-    // Функция рисования текста волной для обмана ИИ
-    function drawWavyText(text, x, y, size, opacity) {
-        ctx.save();
-        ctx.font = `bold ${size}px sans-serif`;
-        ctx.fillStyle = `rgba(120, 120, 140, ${opacity})`;
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-
-        let currentX = x - ctx.measureText(text).width / 2;
-        const amplitude = size * 0.25; // Высота волны
-        const frequency = 0.15;       // Частота изгиба
-
-        for (let i = 0; i < text.length; i++) {
-            const letter = text[i];
-            const letterWidth = ctx.measureText(letter).width;
-            // Смещение по синусоиде на основе позиции буквы
-            const offsetY = Math.sin(i * frequency) * amplitude;
-            
-            ctx.fillText(letter, currentX, y + offsetY);
-            currentX += letterWidth;
-        }
-        ctx.restore();
-    }
-
-    function updateWatermark() {
-        if (!originalImage) return;
-
-        canvas.width = originalImage.width;
-        canvas.height = originalImage.height;
-        ctx.drawImage(originalImage, 0, 0);
-
-        const size = parseInt(wmSize.value);
-        const opacity = parseFloat(wmOpacity.value);
-        const useAiProtection = aiProtection.checked;
-        const text = textWatermark.value || "ЗАЩИЩЕНО";
-
-        ctx.font = `bold ${size}px sans-serif`;
-        const textWidth = ctx.measureText(text).width;
-        
-        const stepX = textWidth + 140;
-        const stepY = size * 5;
-
-        // 1. Сначала накладываем защитные линии фона, если включена ИИ-защита
-        if (useAiProtection) {
-            ctx.save();
-            ctx.strokeStyle = `rgba(220, 50, 50, ${opacity * 0.4})`; // Легкий красноватый оттенок
-            ctx.lineWidth = Math.max(1, size * 0.05);
-            for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
-                ctx.beginPath();
-                ctx.moveTo(-canvas.width, y);
-                ctx.lineTo(canvas.width * 2, y + canvas.height);
-                ctx.stroke();
-            }
-            ctx.restore();
-        }
-
-        // 2. Наносим сетку текста
-        ctx.save();
-        for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
-            for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
-                ctx.save();
-                ctx.translate(x, y);
-                ctx.rotate(-35 * Math.PI / 180);
-                
-                if (useAiProtection) {
-                    drawWavyText(text, 0, 0, size, opacity);
-                } else {
-                    ctx.font = `bold ${size}px sans-serif`;
-                    ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(text, 0, 0);
-                }
-                ctx.restore();
-            }
-        }
-        ctx.restore();
-
-        // 3. Накладываем мелкозернистый цифровой шум поверх текста
-        if (useAiProtection) {
-            ctx.save();
-            const numNoisePixels = (canvas.width * canvas.height) * 0.005; // 0.5% площади заполняем шумом
-            for (let i = 0; i < numNoisePixels; i++) {
-                const noiseX = Math.random() * canvas.width;
-                const noiseY = Math.random() * canvas.height;
-                const noiseSize = Math.random() * 2 + 1;
-                // Случайный цвет шума для разрушения структуры
-                const gray = Math.floor(Math.random() * 150 + 50);
-                ctx.fillStyle = `rgba(${gray}, ${gray}, ${gray + 20}, ${opacity * 1.5})`;
-                ctx.fillRect(noiseX, noiseY, noiseSize, noiseSize);
-            }
-            ctx.restore();
-        }
-    }
-
-    downloadBtn.addEventListener('click', () => {
-        if (!originalImage) return;
-        const link = document.createElement('a');
-        link.download = 'protected_doc.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-</script>
-
-</body>
-</html>
+        const file = e.target.files[0];
