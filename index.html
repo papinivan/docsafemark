@@ -30,7 +30,7 @@
             border-radius: 6px;
             box-sizing: border-box;
         }
-        .settings { display: flex; gap: 15px; }
+        .settings { display: flex; gap: 15px; margin-bottom: 10px; }
         .settings div { flex: 1; }
         input[type="range"] { width: 100%; }
         .preview-area {
@@ -59,6 +59,8 @@
             cursor: pointer;
         }
         .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 14px; color: #475569; }
+        .checkbox-group input { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -77,11 +79,18 @@
     <div class="settings">
         <div>
             <label>Прозрачность</label>
-            <input type="range" id="wmOpacity" min="0.05" max="0.5" step="0.01" value="0.15">
+            <input type="range" id="wmOpacity" min="0.05" max="0.5" step="0.01" value="0.18">
         </div>
         <div>
             <label>Размер текста</label>
             <input type="range" id="wmSize" min="15" max="70" step="1" value="30">
+        </div>
+    </div>
+
+    <div class="block">
+        <div class="checkbox-group">
+            <input type="checkbox" id="aiProtection" checked>
+            <label for="aiProtection" style="display:inline; font-weight:normal; cursor:pointer;">🛡️ Включить умную ИИ-защиту от стирания (шум и искажения)</label>
         </div>
     </div>
 
@@ -98,6 +107,7 @@
     const textWatermark = document.getElementById('textWatermark');
     const wmOpacity = document.getElementById('wmOpacity');
     const wmSize = document.getElementById('wmSize');
+    const aiProtection = document.getElementById('aiProtection');
     const canvas = document.getElementById('imageCanvas');
     const ctx = canvas.getContext('2d');
     const downloadBtn = document.getElementById('downloadBtn');
@@ -109,6 +119,7 @@
     textWatermark.addEventListener('input', updateWatermark);
     wmOpacity.addEventListener('input', updateWatermark);
     wmSize.addEventListener('input', updateWatermark);
+    aiProtection.addEventListener('change', updateWatermark);
 
     function handleImage(e) {
         if (!e.target.files || !e.target.files[0]) return;
@@ -124,7 +135,31 @@
             }
             originalImage.src = event.target.result;
         }
-        reader.readAsDataURL(e.target.files[0]); // Ошибка исправлена здесь
+        reader.readAsDataURL(e.target.files[0]);
+    }
+
+    // Функция рисования текста волной для обмана ИИ
+    function drawWavyText(text, x, y, size, opacity) {
+        ctx.save();
+        ctx.font = `bold ${size}px sans-serif`;
+        ctx.fillStyle = `rgba(120, 120, 140, ${opacity})`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+
+        let currentX = x - ctx.measureText(text).width / 2;
+        const amplitude = size * 0.25; // Высота волны
+        const frequency = 0.15;       // Частота изгиба
+
+        for (let i = 0; i < text.length; i++) {
+            const letter = text[i];
+            const letterWidth = ctx.measureText(letter).width;
+            // Смещение по синусоиде на основе позиции буквы
+            const offsetY = Math.sin(i * frequency) * amplitude;
+            
+            ctx.fillText(letter, currentX, y + offsetY);
+            currentX += letterWidth;
+        }
+        ctx.restore();
     }
 
     function updateWatermark() {
@@ -135,28 +170,67 @@
         ctx.drawImage(originalImage, 0, 0);
 
         const size = parseInt(wmSize.value);
-        ctx.font = `bold ${size}px sans-serif`;
-        ctx.fillStyle = `rgba(0, 0, 0, ${wmOpacity.value})`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
+        const opacity = parseFloat(wmOpacity.value);
+        const useAiProtection = aiProtection.checked;
         const text = textWatermark.value || "ЗАЩИЩЕНО";
+
+        ctx.font = `bold ${size}px sans-serif`;
         const textWidth = ctx.measureText(text).width;
         
-        const stepX = textWidth + 120;
+        const stepX = textWidth + 140;
         const stepY = size * 5;
 
+        // 1. Сначала накладываем защитные линии фона, если включена ИИ-защита
+        if (useAiProtection) {
+            ctx.save();
+            ctx.strokeStyle = `rgba(220, 50, 50, ${opacity * 0.4})`; // Легкий красноватый оттенок
+            ctx.lineWidth = Math.max(1, size * 0.05);
+            for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
+                ctx.beginPath();
+                ctx.moveTo(-canvas.width, y);
+                ctx.lineTo(canvas.width * 2, y + canvas.height);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        // 2. Наносим сетку текста
         ctx.save();
         for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
             for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
                 ctx.save();
                 ctx.translate(x, y);
-                ctx.rotate(-45 * Math.PI / 180);
-                ctx.fillText(text, 0, 0);
+                ctx.rotate(-35 * Math.PI / 180);
+                
+                if (useAiProtection) {
+                    drawWavyText(text, 0, 0, size, opacity);
+                } else {
+                    ctx.font = `bold ${size}px sans-serif`;
+                    ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(text, 0, 0);
+                }
                 ctx.restore();
             }
         }
         ctx.restore();
+
+        // 3. Накладываем мелкозернистый цифровой шум поверх текста
+        if (useAiProtection) {
+            ctx.save();
+            const numNoisePixels = (canvas.width * canvas.height) * 0.005; // 0.5% площади заполняем шумом
+            for (let i = 0; i < numNoisePixels; i++) {
+                const noiseX = Math.random() * canvas.width;
+                const noiseY = Math.random() * canvas.height;
+                const noiseSize = Math.random() * 2 + 1;
+                // Случайный цвет шума для разрушения структуры
+                const gray = Math.floor(Math.random() * 150 + 50);
+                ctx.fillStyle = `rgba(${gray}, ${gray}, ${gray + 20}, ${opacity * 1.5})`;
+                ctx.fillRect(noiseX, noiseY, noiseSize, noiseSize);
+            }
+            ctx.restore();
+        }
     }
 
     downloadBtn.addEventListener('click', () => {
