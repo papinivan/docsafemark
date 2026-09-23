@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocSafeMark</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .block { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; color: #334155; }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .settings { display: flex; gap: 15px; }
+        .settings div { flex: 1; }
+        input[type="range"] { width: 100%; }
+        .preview-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            min-height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f1f5f9;
+            margin: 15px 0;
+        }
+        canvas { max-width: 100%; max-height: 450px; display: none; border-radius: 4px; }
+        .btn {
+            display: block;
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="block">
+        <label>1. Выберите фото документа</label>
+        <input type="file" id="imageLoader" accept="image/*">
+    </div>
+
+    <div class="block">
+        <label>2. Текст водяного знака</label>
+        <input type="text" id="textWatermark" value="Для предоставления в банк. Без права кредитования.">
+    </div>
+
+    <div class="settings">
+        <div>
+            <label>Прозрачность</label>
+            <input type="range" id="wmOpacity" min="0.05" max="0.5" step="0.01" value="0.15">
+        </div>
+        <div>
+            <label>Размер текста</label>
+            <input type="range" id="wmSize" min="15" max="70" step="1" value="30">
+        </div>
+    </div>
+
+    <div class="preview-area">
+        <p id="placeholderText" style="color: #64748b;">Результат появится здесь</p>
+        <canvas id="imageCanvas"></canvas>
+    </div>
+
+    <button class="btn" id="downloadBtn" disabled>Скачать результат</button>
+</div>
+
+<script>
+    const imageLoader = document.getElementById('imageLoader');
+    const textWatermark = document.getElementById('textWatermark');
+    const wmOpacity = document.getElementById('wmOpacity');
+    const wmSize = document.getElementById('wmSize');
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const placeholderText = document.getElementById('placeholderText');
+
+    let originalImage = null;
+
+    imageLoader.addEventListener('change', handleImage, false);
+    textWatermark.addEventListener('input', updateWatermark);
+    wmOpacity.addEventListener('input', updateWatermark);
+    wmSize.addEventListener('input', updateWatermark);
+
+    function handleImage(e) {
+        if (!e.target.files || !e.target.files[0]) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            originalImage = new Image();
+            originalImage.onload = function() {
+                placeholderText.style.display = 'none';
+                canvas.style.display = 'block';
+                downloadBtn.disabled = false;
+                updateWatermark();
+            }
+            originalImage.src = event.target.result;
+        }
+        reader.readAsDataURL(e.target.files[0]); // Ошибка исправлена здесь
+    }
+
+    function updateWatermark() {
+        if (!originalImage) return;
+
+        canvas.width = originalImage.width;
+        canvas.height = originalImage.height;
+        ctx.drawImage(originalImage, 0, 0);
+
+        const size = parseInt(wmSize.value);
+        ctx.font = `bold ${size}px sans-serif`;
+        ctx.fillStyle = `rgba(0, 0, 0, ${wmOpacity.value})`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const text = textWatermark.value || "ЗАЩИЩЕНО";
+        const textWidth = ctx.measureText(text).width;
+        
+        const stepX = textWidth + 120;
+        const stepY = size * 5;
+
+        ctx.save();
+        for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
+            for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(-45 * Math.PI / 180);
+                ctx.fillText(text, 0, 0);
+                ctx.restore();
+            }
+        }
+        ctx.restore();
+    }
+
+    downloadBtn.addEventListener('click', () => {
+        if (!originalImage) return;
+        const link = document.createElement('a');
+        link.download = 'protected_doc.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+</script>
+
+</body>
+</html>
