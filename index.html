@@ -14,7 +14,6 @@
             --text-muted: #64748b;
             --border: #e2e8f0;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
@@ -27,7 +26,6 @@
             min-height: 100vh;
             box-sizing: border-box;
         }
-
         .container {
             max-width: 600px;
             width: 100%;
@@ -36,39 +34,11 @@
             border-radius: 16px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
-
-        header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 15px;
-            margin: 0;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-        }
-
+        header { text-align: center; margin-bottom: 32px; }
+        h1 { font-size: 28px; font-weight: 700; margin: 0 0 8px 0; letter-spacing: -0.5px; }
+        .subtitle { color: var(--text-muted); font-size: 15px; margin: 0; }
+        .form-group { margin-bottom: 24px; }
+        label { display: block; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; color: var(--text-muted); }
         .dropzone {
             border: 2px dashed var(--border);
             padding: 32px 20px;
@@ -79,166 +49,36 @@
             position: relative;
             transition: all 0.2s;
         }
-
-        .dropzone:hover, .dropzone.dragover {
-            border-color: var(--primary);
-            background: #f0f7ff;
-        }
-
-        .dropzone p {
-            margin: 0;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .dropzone strong {
-            color: var(--primary);
-        }
-
-        #imageLoader {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
-            box-sizing: border-box;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .sliders {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 480px) {
-            .sliders { grid-template-columns: 1fr; gap: 16px; }
-        }
-
-        .slider-card {
-            background: #f8fafc;
-            padding: 14px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            margin: 0;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .checkbox-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f8fafc;
-            padding: 14px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-        }
-
-        .checkbox-card input {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-            margin: 0;
-        }
-
-        .checkbox-card .info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .checkbox-card .title {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .checkbox-card .desc {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .preview-box {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: #f1f5f9;
-            min-height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            margin: 32px 0 24px 0;
-        }
-
-        .preview-box p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        canvas {
-            max-width: 100%;
-            max-height: 500px;
-            display: none;
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-            transition: background 0.15s;
-        }
-
+        .dropzone:hover, .dropzone.dragover { border-color: var(--primary); background: #f0f7ff; }
+        .dropzone p { margin: 0; font-size: 14px; color: var(--text-muted); }
+        .dropzone strong { color: var(--primary); }
+        #imageLoader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        input[type="text"] { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+        input[type="text"]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 480px) { .sliders { grid-template-columns: 1fr; gap: 16px; } }
+        .slider-card { background: #f8fafc; padding: 14px 16px; border-radius: 8px; border: 1px solid var(--border); }
+        .slider-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+        input[type="range"] { width: 100%; margin: 0; accent-color: var(--primary); cursor: pointer; }
+        .checkbox-card { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 14px 16px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; }
+        .checkbox-card input { width: 16px; height: 16px; accent-color: var(--primary); margin: 0; }
+        .checkbox-card .info { display: flex; flex-direction: column; }
+        .checkbox-card .title { font-size: 14px; font-weight: 600; }
+        .checkbox-card .desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .preview-box { border: 1px solid var(--border); border-radius: 12px; background: #f1f5f9; min-height: 200px; display: flex; justify-content: center; align-items: center; overflow: hidden; margin: 32px 0 24px 0; }
+        .preview-box p { color: var(--text-muted); font-size: 14px; }
+        canvas { max-width: 100%; max-height: 500px; display: none; }
+        .btn { display: block; width: 100%; background: var(--primary); color: white; border: none; padding: 16px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); transition: background 0.15s; }
         .btn:hover { background: var(--primary-hover); }
-        .btn:disabled {
-            background: #cbd5e1;
-            color: #94a3b8;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+        .btn:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <h1>DocSafeMark</h1>
         <p class="subtitle">Безопасное нанесение водяных знаков в браузере</p>
     </header>
-
     <div class="form-group">
         <label>1. Исходный файл</label>
         <div class="dropzone" id="dropzone">
@@ -246,29 +86,20 @@
             <input type="file" id="imageLoader" accept="image/*">
         </div>
     </div>
-
     <div class="form-group">
         <label>2. Текст маркировки</label>
         <input type="text" id="textWatermark" value="Для предоставления в банк. Без права кредитования.">
     </div>
-
     <div class="form-group sliders">
         <div class="slider-card">
-            <div class="slider-header">
-                <span>Прозрачность</span>
-                <span id="opacityVal">18%</span>
-            </div>
+            <div class="slider-header"><span>Прозрачность</span><span id="opacityVal">18%</span></div>
             <input type="range" id="wmOpacity" min="0.05" max="0.5" step="0.01" value="0.18">
         </div>
         <div class="slider-card">
-            <div class="slider-header">
-                <span>Размер текста</span>
-                <span id="sizeVal">30px</span>
-            </div>
+            <div class="slider-header"><span>Размер текста</span><span id="sizeVal">30px</span></div>
             <input type="range" id="wmSize" min="15" max="70" step="1" value="30">
         </div>
     </div>
-
     <div class="form-group">
         <label class="checkbox-card" for="aiProtection">
             <input type="checkbox" id="aiProtection" checked>
@@ -278,66 +109,12 @@
             </div>
         </label>
     </div>
-
     <div class="preview-box">
         <p id="placeholderText">Загрузите документ для предпросмотра</p>
         <canvas id="imageCanvas"></canvas>
     </div>
-
     <button class="btn" id="downloadBtn" disabled>Скачать защищенный документ</button>
 </div>
-
-<script>
-    const imageLoader = document.getElementById('imageLoader');
-    const dropzone = document.getElementById('dropzone');
-    const dropzoneText = document.getElementById('dropzoneText');
-    const textWatermark = document.getElementById('textWatermark');
-    const wmOpacity = document.getElementById('wmOpacity');
-    const wmSize = document.getElementById('wmSize');
-    const aiProtection = document.getElementById('aiProtection');
-    const canvas = document.getElementById('imageCanvas');
-    const ctx = canvas.getContext('2d');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const placeholderText = document.getElementById('placeholderText');
-    const opacityVal = document.getElementById('opacityVal');
-    const sizeVal = document.getElementById('sizeVal');
-
-    let originalImage = null;
-
-    ['dragenter', 'dragover'].forEach(name => {
-        dropzone.addEventListener(name, () => dropzone.classList.add('dragover'), false);
-    });
-    ['dragleave', 'drop'].forEach(name => {
-        dropzone.addEventListener(name, () => dropzone.classList.remove('dragover'), false);
-    });
-
-    imageLoader.addEventListener('change', handleImage, false);
-    textWatermark.addEventListener('input', updateWatermark);
-    
-    wmOpacity.addEventListener('input', (e) => {
-        opacityVal.innerText = `${Math.round(e.target.value * 100)}%`;
-        updateWatermark();
-    });
-    
-    wmSize.addEventListener('input', (e) => {
-        sizeVal.innerText = `${e.target.value}px`;
-        updateWatermark();
-    });
-    
-    aiProtection.addEventListener('change', updateWatermark);
-
-    function handleImage(e) {
-        if (!e.target.files || !e.target.files[0]) return;
-        
-        const file = e.target.files[0];
-        dropzoneText.innerHTML = `Выбран файл: <strong>${file.name}</strong>`;
-        
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            originalImage = new Image();
-            originalImage.onload = function() {
-                placeholderText.style.display = 'none';
-                canvas.style.display = 'block';
-                downloadBtn.disabled = false;
-                updateWatermark();
-            }
+<script src="script.js"></script>
+</body>
+</html>
